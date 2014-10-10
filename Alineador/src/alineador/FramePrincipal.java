@@ -19,6 +19,10 @@ import javax.swing.JOptionPane;
  */
 public class FramePrincipal extends javax.swing.JFrame {
 
+    private String secuencia1;
+    private String secuencia2;
+    private int[][] matriz;
+    
     /**
      * Creates new form FramePrincipal
      */
@@ -118,11 +122,23 @@ public class FramePrincipal extends javax.swing.JFrame {
    {     
       FileReader archivos=new FileReader(abre);
       BufferedReader lee=new BufferedReader(archivos);
+      int cont=1;
       while((aux=lee.readLine())!=null)
       {
-         texto+= aux+ "\n";
+          if(!aux.contains(">")){
+              if (cont==1) {
+                  secuencia1 = aux;
+                  convertirSecuencia(secuencia1,1);
+              }else if(cont==2){
+                  secuencia2=aux;
+                  convertirSecuencia(secuencia2,2);
+              }
+              cont++;
+          }
       }
-         lee.close();
+      llenarMatriz();
+      imprimirMatriz();
+      lee.close();
     }    
    }
    catch(IOException ex)
@@ -135,6 +151,55 @@ public class FramePrincipal extends javax.swing.JFrame {
         jTextArea1.setText(texto);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    
+    public void llenarMatriz(){
+        matriz= new int[secuencia2.length()+2][secuencia1.length()+2];
+        for (int i = secuencia1.length(); i < 0; i--) {
+            matriz[0][i]=Integer.parseInt(String.valueOf(secuencia1.charAt(i)));
+        }
+        for (int i = secuencia2.length(); i < 0; i--) {
+            matriz[i][0]=Integer.parseInt(String.valueOf(secuencia2.charAt(i)));
+        }
+        int cont=0;
+        for(int i=1;i<secuencia1.length();i++){
+            matriz[1][i]=cont;
+            cont-=5;
+        }
+        cont=0;
+        for(int i=1;i<secuencia2.length();i++){
+            matriz[i][1]=cont;
+            cont-=5;
+        }
+    }
+    public void imprimirMatriz(){
+        for (int i = 0; i <secuencia1.length(); i++) {
+            for (int j = 0; j < secuencia2.length(); j++) {
+                System.out.println(matriz[i][j]+" ");
+            }
+        }
+    }
+    public void convertirSecuencia(String cadena, int dif){
+        String cadAux="";
+        char A='A';
+        char C='C';
+        char G='G';
+        char T='T';
+        for (int i = 0; i < cadena.length(); i++) {
+            if ((cadena.charAt(i))==A) {
+                cadAux+="1";
+            }if ((cadena.charAt(i))==G) {
+                cadAux+="2";
+            }if ((cadena.charAt(i))==C) {
+                cadAux+="3";
+            }if ((cadena.charAt(i))==T) {
+                cadAux+="4";
+            }
+        }if (dif==1) {
+            secuencia1=cadAux;
+        }if (dif==2) {
+            secuencia2=cadAux;
+        }
+    }
     /**
      * @param args the command line arguments
      */
