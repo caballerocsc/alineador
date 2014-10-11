@@ -22,6 +22,9 @@ public class FramePrincipal extends javax.swing.JFrame {
     private String secuencia1;
     private String secuencia2;
     private int[][] matriz;
+    private int[][] score=new int[5][5];
+     
+    
     
     /**
      * Creates new form FramePrincipal
@@ -129,15 +132,15 @@ public class FramePrincipal extends javax.swing.JFrame {
               if (cont==1) {
                   secuencia1 = aux;
                   convertirSecuencia(secuencia1,1);
+                  System.out.println(secuencia1);
               }else if(cont==2){
                   secuencia2=aux;
                   convertirSecuencia(secuencia2,2);
+                  System.out.println(secuencia2);
               }
               cont++;
           }
       }
-      llenarMatriz();
-      imprimirMatriz();
       lee.close();
     }    
    }
@@ -147,35 +150,69 @@ public class FramePrincipal extends javax.swing.JFrame {
            "\nNo se ha encontrado el archivo",
                  "ADVERTENCIA!!!",JOptionPane.WARNING_MESSAGE);
     }
-        System.out.println(texto);
-        jTextArea1.setText(texto);
+        jTextArea1.setText(secuencia1+"\n"+secuencia2);
+        llenarEncabezados();
+        imprimirMatriz();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    
-    public void llenarMatriz(){
-        matriz= new int[secuencia2.length()+2][secuencia1.length()+2];
-        for (int i = secuencia1.length(); i < 0; i--) {
-            matriz[0][i]=Integer.parseInt(String.valueOf(secuencia1.charAt(i)));
+    public int llenarMatriz( int fila, int columna,int cabFila, int cabCol){
+        int[] op=new int[3];
+        int gap=-5;
+        score[1][1]=10;score[1][2]=-1;score[1][3]=-3;score[1][4]=-4;
+        score[2][1]=-1;score[2][2]=7;score[2][3]=-5;score[2][4]=-3;
+        score[3][1]=-3;score[3][2]=-5;score[3][3]=9;score[3][4]=0;
+        score[4][1]=-4;score[4][2]=-3;score[4][3]=0;score[4][4]=8;
+        System.out.println(matriz[fila-1][columna-1]+"+"+score[cabFila][cabCol]+'='+matriz[fila-1][columna-1]+score[cabFila][cabCol]);
+        op[0]=matriz[fila-1][columna-1]+score[cabFila][cabCol];
+        op[1]=matriz[fila][columna-1]+gap;
+        op[2]=matriz[fila-1][columna]+gap;
+        int temp;
+        for (int i = 0; i < op.length; i++) {
+            for (int j = 0; j < op.length-1; j++) {
+                if(op[j]>op[j+1]){
+                 temp=op[j];
+                 op[j]=op[j+1];
+                 op[j+1]=temp;
+                }
+            }
         }
-        for (int i = secuencia2.length(); i < 0; i--) {
-            matriz[i][0]=Integer.parseInt(String.valueOf(secuencia2.charAt(i)));
+        return op[2];
+    }
+    
+    public void llenarEncabezados(){
+        int filas =secuencia2.length();
+        int columnas=secuencia1.length();
+        matriz= new int[filas+2][columnas+2];
+        for (int i =2; i< matriz[0].length; i++) {
+            matriz[0][i]=Integer.parseInt(String.valueOf(secuencia1.charAt(i-2)));
+        }
+        for (int i=2; i<matriz.length; i++) {
+            matriz[i][0]=Integer.parseInt(String.valueOf(secuencia2.charAt(i-2)));
         }
         int cont=0;
-        for(int i=1;i<secuencia1.length();i++){
+        for(int i=1;i<matriz[0].length;i++){
             matriz[1][i]=cont;
             cont-=5;
         }
         cont=0;
-        for(int i=1;i<secuencia2.length();i++){
+        for(int i=1;i<matriz.length;i++){
             matriz[i][1]=cont;
             cont-=5;
         }
+        imprimirMatriz();
+        for (int i = 2; i < matriz.length; i++) {
+            for (int j = 2; j < matriz[0].length; j++) {
+                matriz[i][j]=llenarMatriz(i,j,matriz[i][0],matriz[0][j]);
+            }
+        }
     }
     public void imprimirMatriz(){
-        for (int i = 0; i <secuencia1.length(); i++) {
-            for (int j = 0; j < secuencia2.length(); j++) {
-                System.out.println(matriz[i][j]+" ");
+        for (int i = 0; i <matriz.length; i++) {
+            String linea="";
+            for (int j = 0; j < matriz[0].length; j++) {
+                linea=linea+" "+matriz[i][j];
             }
+            System.out.println(linea);
         }
     }
     public void convertirSecuencia(String cadena, int dif){
